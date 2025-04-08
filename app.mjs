@@ -7,7 +7,7 @@ let games = [];
 const gameListKey = 'games'
 localStorage.clear();
 
-function saveGameToStorage(game){
+function saveNewGameToStorage(game){
     let listOfAllTheGames = [];
     if(localStorage.length == 0){
         listOfAllTheGames.push(game);
@@ -19,8 +19,8 @@ function saveGameToStorage(game){
     }
 }
 
-saveGameToStorage(someRandomGame);
-saveGameToStorage(someOtherRandomGame);
+saveNewGameToStorage(someRandomGame);
+saveNewGameToStorage(someOtherRandomGame);
 
 function retrieveAllGamesFromStorage(){
     if(localStorage.length > 0){
@@ -85,6 +85,7 @@ function  handleFileSelection(event){
         importJSONFileToLocalStorage(readFile);
         addGamesToGameList();
         showListOfSavedGames(games);
+
     }
     reader.onerror = () => {
         showMessage("Error reading the file. Please try again.", "error");
@@ -107,8 +108,9 @@ function addGamesToGameList(){
     }
 }
 
-function createListedDetails(data){
+function createListedDetails(data, dataindex){
     let currentData = data;
+    let currentIndex = dataindex
     let linebreak = document.createElement('br');
     const ul = document.getElementById("gamesList");
     let liElement = document.createElement('li');
@@ -118,10 +120,12 @@ function createListedDetails(data){
     let listedDetails2 = document.createElement('ul');
     let listedDetails3 = document.createElement('ul');
     let listedDetails4 = document.createElement('ul');
-    let playerCount = document.createElement('section');
+    let timesPlayed = document.createElement('section');
     let gameRating = document.createElement('section');
-    let playerCountButton = document.createElement('button');
+    let addTimesPlayedButton = document.createElement('button');
     let slider = document.createElement('input');
+    let playCountNode = document.createTextNode('Playercount: ' + currentData.playCount + ' ');
+    let ratingNode = document.createTextNode('Rating: ' + slider.value + ' ');
 
     itemElementHeader.appendChild(document.createTextNode(currentData.title));
     itemElements.appendChild(linebreak);
@@ -139,31 +143,56 @@ function createListedDetails(data){
     listedDetails3.appendChild(document.createElement('br'));
     listedDetails4.appendChild(document.createTextNode('BGG Listing: ' + currentData.url));
     listedDetails4.appendChild(document.createElement('br'));
-    playerCount.appendChild(linebreak)
-    playerCountButton.textContent = '+'
-    playerCountButton.style.height = '20px'
-    playerCountButton.style.width = '25px'
-    playerCount.appendChild(document.createTextNode('Playercount: ' + currentData.playCount + ' '));
-    playerCount.appendChild(playerCountButton)
+    timesPlayed.appendChild(linebreak)
+    addTimesPlayedButton.textContent = '+'
+    addTimesPlayedButton.style.height = '20px'
+    addTimesPlayedButton.style.width = '25px'
+    addTimesPlayedButton.value = currentData.playCount;
+    addTimesPlayedButton.addEventListener('click', function (event) {
+        let newValue = parseInt(this.value) + 1;
+        this.value = newValue.toString();
+        console.log(newValue);
+        if(this.value != games[currentIndex].playCount){
+            games[currentIndex].playCount = this.value;
+            let tempGameList = JSON.parse(localStorage.getItem(gameListKey));
+            tempGameList[currentIndex].playCount = this.value;
+            saveEditToLocalStorage(tempGameList);
+            playCountNode.nodeValue = 'Playercount: ' + this.value + ' ';
+        }
+    })
+    timesPlayed.appendChild(playCountNode);
+    timesPlayed.appendChild(addTimesPlayedButton)
+    gameRating.appendChild(ratingNode);
     slider.type = 'range';
     slider.min = 0;
     slider.max = 10;
     slider.step = 1;
     slider.value = currentData.personalRating;
-    gameRating.appendChild(document.createTextNode('Rating: ' + currentData.personalRating + ' '));
+    slider.id = "slider";
+    slider.addEventListener('input', function (event) {
+        if(this.value != games[currentIndex].personalRating){
+            games[currentIndex].personalRating = this.value;
+            let tempGameList = JSON.parse(localStorage.getItem(gameListKey));
+            tempGameList[currentIndex].personalRating = this.value;
+            saveEditToLocalStorage(tempGameList);
+            ratingNode.nodeValue = 'Rating: ' + this.value + ' ';
+        }
+    })
     gameRating.appendChild(slider);
 
-    listedDetails1.style.fontSize = '20px'
-    listedDetails2.style.fontSize = '20px'
-    listedDetails3.style.fontSize = '20px'
-    listedDetails4.style.fontSize = '20px'
+    listedDetails1.style.fontSize = '20px';
+    listedDetails2.style.fontSize = '20px';
+    listedDetails3.style.fontSize = '20px';
+    listedDetails4.style.fontSize = '20px';
+    timesPlayed.style.fontSize = '20px';
+    gameRating.style.fontSize = '20px';
     itemElementHeader.appendChild(itemElements);
     liElement.appendChild(itemElementHeader);
     liElement.appendChild(listedDetails1);
     liElement.appendChild(listedDetails2);
     liElement.appendChild(listedDetails3);
     liElement.appendChild(listedDetails4);
-    liElement.appendChild(playerCount);
+    liElement.appendChild(timesPlayed);
     liElement.appendChild(gameRating);
     ul.appendChild(liElement);
 }
@@ -171,6 +200,10 @@ function createListedDetails(data){
 function showListOfSavedGames(data){
     for(let i = 0; i < data.length; i++){
         let currentSelectedData = data[i];
-        createListedDetails(currentSelectedData);
+        createListedDetails(currentSelectedData, i);
     }
+}
+
+function saveEditToLocalStorage(exportedLocalData){
+    localStorage.setItem(gameListKey, JSON.stringify(exportedLocalData));
 }
