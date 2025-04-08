@@ -83,7 +83,8 @@ function  handleFileSelection(event){
     reader.onload = () => {
         const readFile = reader.result;
         importJSONFileToLocalStorage(readFile);
-        addGamesToGameList()
+        addGamesToGameList();
+        showListOfSavedGames(games);
     }
     reader.onerror = () => {
         showMessage("Error reading the file. Please try again.", "error");
@@ -103,5 +104,73 @@ function addGamesToGameList(){
         for(let i = 0; i < gamesInJSON.length; i++){
             games.push(gamesInJSON[i]);
         }
+    }
+}
+
+function createListedDetails(data){
+    let currentData = data;
+    let linebreak = document.createElement('br');
+    const ul = document.getElementById("gamesList");
+    let liElement = document.createElement('li');
+    let itemElementHeader = document.createElement('h1');
+    let itemElements = document.createElement('section');
+    let listedDetails1 = document.createElement('ul');
+    let listedDetails2 = document.createElement('ul');
+    let listedDetails3 = document.createElement('ul');
+    let listedDetails4 = document.createElement('ul');
+    let playerCount = document.createElement('section');
+    let gameRating = document.createElement('section');
+    let playerCountButton = document.createElement('button');
+    let slider = document.createElement('input');
+
+    itemElementHeader.appendChild(document.createTextNode(currentData.title));
+    itemElements.appendChild(linebreak);
+    itemElements.appendChild(document.createTextNode('Year: ' + currentData.year +  ' '.repeat(3)));
+    itemElements.appendChild(document.createTextNode('Players: ' + currentData.players +  ' '.repeat(3)));
+    itemElements.appendChild(document.createTextNode('Time: ' + currentData.time +  ' '.repeat(3)));
+    itemElements.appendChild(document.createTextNode('Difficulty: ' + currentData.difficulty));
+    itemElements.style.fontSize = '20px';
+    itemElements.style.fontWeight = 'normal';
+    listedDetails1.appendChild(document.createTextNode('Designer: ' + currentData.designer));
+    listedDetails1.appendChild(document.createElement('br'));
+    listedDetails2.appendChild(document.createTextNode('Artist: ' + currentData.artist));
+    listedDetails2.appendChild(document.createElement('br'));
+    listedDetails3.appendChild(document.createTextNode('Publisher: ' + currentData.publisher));
+    listedDetails3.appendChild(document.createElement('br'));
+    listedDetails4.appendChild(document.createTextNode('BGG Listing: ' + currentData.url));
+    listedDetails4.appendChild(document.createElement('br'));
+    playerCount.appendChild(linebreak)
+    playerCountButton.textContent = '+'
+    playerCountButton.style.height = '20px'
+    playerCountButton.style.width = '25px'
+    playerCount.appendChild(document.createTextNode('Playercount: ' + currentData.playCount + ' '));
+    playerCount.appendChild(playerCountButton)
+    slider.type = 'range';
+    slider.min = 0;
+    slider.max = 10;
+    slider.step = 1;
+    slider.value = currentData.personalRating;
+    gameRating.appendChild(document.createTextNode('Rating: ' + currentData.personalRating + ' '));
+    gameRating.appendChild(slider);
+
+    listedDetails1.style.fontSize = '20px'
+    listedDetails2.style.fontSize = '20px'
+    listedDetails3.style.fontSize = '20px'
+    listedDetails4.style.fontSize = '20px'
+    itemElementHeader.appendChild(itemElements);
+    liElement.appendChild(itemElementHeader);
+    liElement.appendChild(listedDetails1);
+    liElement.appendChild(listedDetails2);
+    liElement.appendChild(listedDetails3);
+    liElement.appendChild(listedDetails4);
+    liElement.appendChild(playerCount);
+    liElement.appendChild(gameRating);
+    ul.appendChild(liElement);
+}
+
+function showListOfSavedGames(data){
+    for(let i = 0; i < data.length; i++){
+        let currentSelectedData = data[i];
+        createListedDetails(currentSelectedData);
     }
 }
