@@ -21,6 +21,9 @@ function saveNewGameToStorage(game){
 
 saveNewGameToStorage(someRandomGame);
 saveNewGameToStorage(someOtherRandomGame);
+addGamesToGameList();
+showListOfSavedGames(games);
+
 
 function retrieveAllGamesFromStorage(){
     if(localStorage.length > 0){
@@ -68,7 +71,11 @@ fileInput.addEventListener("change", handleFileSelection);
 
 function  handleFileSelection(event){
     const file = event.target.files[0];
-    const extension = file.name.split('.').pop();
+    let extension;
+    if(file != undefined){
+        extension = file.name.split('.').pop();
+    }
+    
     messageDisplay.textContent = "";
     
     if(!file){
@@ -81,11 +88,20 @@ function  handleFileSelection(event){
 
     const reader = new FileReader();
     reader.onload = () => {
-        const readFile = reader.result;
+        let readFile = reader.result;
         importJSONFileToLocalStorage(readFile);
-        addGamesToGameList();
-        showListOfSavedGames(games);
-
+        JSON.stringify(readFile);
+        try{
+            readFile = JSON.parse(readFile);
+        }catch(error){
+            console.error(error);
+        }
+        for(let i = 0; i < readFile.length; i++){
+            console.log(readFile[i].title)
+            games.push(readFile[i])
+            showListOfSavedGames(readFile[i]);
+        }
+        
     }
     reader.onerror = () => {
         showMessage("Error reading the file. Please try again.", "error");
@@ -151,7 +167,6 @@ function createListedDetails(data, dataindex){
     addTimesPlayedButton.addEventListener('click', function (event) {
         let newValue = parseInt(this.value) + 1;
         this.value = newValue.toString();
-        console.log(newValue);
         if(this.value != games[currentIndex].playCount){
             games[currentIndex].playCount = this.value;
             let tempGameList = JSON.parse(localStorage.getItem(gameListKey));
@@ -198,12 +213,54 @@ function createListedDetails(data, dataindex){
 }
 
 function showListOfSavedGames(data){
-    for(let i = 0; i < data.length; i++){
-        let currentSelectedData = data[i];
-        createListedDetails(currentSelectedData, i);
+    if(games[games.length-1].title == document.querySelector('#title').value){
+        for(let i = 0; i < games.length; i++){
+            if(data == games[i]){
+                createListedDetails(data, i);
+            }
+        }
+    } else {
+        for(let i = 0; i < games.length; i++){
+            if(data == games[i]){
+                createListedDetails(data, i);
+            }
+        }
+    }
+    if(data.toString()[0] == '['){
+        for(let i = 0; i < data.length; i++){
+            let currentSelectedData = data[i];
+            createListedDetails(currentSelectedData, i);
+        }
     }
 }
 
 function saveEditToLocalStorage(exportedLocalData){
     localStorage.setItem(gameListKey, JSON.stringify(exportedLocalData));
+}
+
+let newGameButton = document.querySelector('#addGameToList');
+newGameButton.addEventListener('click', addNewGameToListOfGames);
+
+function addNewGameToListOfGames(event) {
+    const valOfTitle = document.querySelector('#title').value;
+    const valOfDesigner = document.querySelector('#designer').value;
+    const valOfArtist = document.querySelector('#artist').value;
+    const valOfPublisher = document.querySelector('#publisher').value;
+    const valOfYear = document.querySelector('#year').value;
+    const valOfPlayers = document.querySelector('#players').value;
+    const valOfTime = document.querySelector('#time').value;
+    const valOfDifficulty = document.querySelector('#difficulty').value;
+    const valOfUrl = document.querySelector('#url').value;
+    const valOfPlayCount = document.querySelector('#playCount').value;
+    const valOfPersonalRating = document.querySelector('#personalRating').value;
+
+    let targetElement = event.target;
+    if(targetElement.className === 'addNewGameToList'){
+        let newGameData = new Game(valOfTitle, valOfDesigner, valOfArtist, valOfPublisher, valOfYear, valOfPlayers, valOfTime, valOfDifficulty, valOfUrl, valOfPlayCount, valOfPersonalRating);
+        if(parseInt(valOfPlayCount).toString() != 'NaN'){
+            saveNewGameToStorage(newGameData);
+            games.push(newGameData);
+            showListOfSavedGames(newGameData);
+        }
+    }
 }
