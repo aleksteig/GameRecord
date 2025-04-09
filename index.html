@@ -11,11 +11,50 @@
     <input type="file" id="importSource">
     <div id="message"></div>
 
-    <div>
+    <div style="flex-direction: column;" class="allGamesList">
         <ul id="gamesList">
 
         </ul>
+
+        <div class="addNewGame" style="align-content: end;">
+            <label for="title">Title: </label>
+            <input type="text" id="title" name="title">
+            <br>
+            <label for="designer">Designer: </label>
+            <input type="text" id="designer" name="designer">
+            <br>
+            <label for="artist">Artist: </label>
+            <input type="text" id="artist" name="artist">
+            <br>
+            <label for="publisher">Publisher: </label>
+            <input type="text" id="publisher" name="publisher">
+            <br>
+            <label for="year">Year: </label>
+            <input type="text" id="year" name="year">
+            <br>
+            <label for="players">Players: </label>
+            <input type="text" id="players" name="players">
+            <br>
+            <label for="time">Time: </label>
+            <input type="text" id="time" name="time">
+            <br>
+            <label for="difficulty">Difficulty: </label>
+            <input type="text" id="difficulty" name="difficulty">
+            <br>
+            <label for="url">BGG Listing: </label>
+            <input type="text" id="url" name="url">
+            <br>
+            <label for="playCount">Playcount: </label>
+            <input type="text" id="playCount" name="playCount">
+            <br>
+            <label for="personalRating">Rating: </label>
+            <input type="text" id="personalRating" name="personalRating">
+            <br>
+            <button id="addGameToList">+</button>
+        </div>
     </div>
+
+    
 
     <script src="app.mjs" type="module"></script>
 

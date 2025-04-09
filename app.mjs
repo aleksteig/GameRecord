@@ -124,7 +124,7 @@ function createListedDetails(data, dataindex){
     let gameRating = document.createElement('section');
     let addTimesPlayedButton = document.createElement('button');
     let slider = document.createElement('input');
-    let playCountNode = document.createTextNode('Playercount: ' + currentData.playCount + ' ');
+    let playCountNode = document.createTextNode('Playcount: ' + currentData.playCount + ' ');
     let ratingNode = document.createTextNode('Rating: ' + slider.value + ' ');
 
     itemElementHeader.appendChild(document.createTextNode(currentData.title));
@@ -157,7 +157,7 @@ function createListedDetails(data, dataindex){
             let tempGameList = JSON.parse(localStorage.getItem(gameListKey));
             tempGameList[currentIndex].playCount = this.value;
             saveEditToLocalStorage(tempGameList);
-            playCountNode.nodeValue = 'Playercount: ' + this.value + ' ';
+            playCountNode.nodeValue = 'Playcount: ' + this.value + ' ';
         }
     })
     timesPlayed.appendChild(playCountNode);
