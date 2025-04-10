@@ -1,11 +1,7 @@
 import Game from "./models/gameClass.mjs";
 
-let someRandomGame = new Game("Sudoku", "FromSoftware", "New York", "Nintendo", 3096, "2-5", "600 mins", "Easy", "https://youtube.com", 3000, 10);
-let someOtherRandomGame = new Game("Sudoku 2", "Reddit", "Norway", "Sega", 1024, "5", "120 mins", "Medium", "https://google.com", 10, 4);
 let games = [];
-
-const gameListKey = 'games'
-localStorage.clear();
+const gameListKey = 'games';
 
 function saveNewGameToStorage(game){
     let listOfAllTheGames = [];
@@ -19,11 +15,10 @@ function saveNewGameToStorage(game){
     }
 }
 
-saveNewGameToStorage(someRandomGame);
-saveNewGameToStorage(someOtherRandomGame);
-addGamesToGameList();
-showListOfSavedGames(games);
-
+if(JSON.parse(localStorage.getItem(gameListKey)).toString()[0] == '['){
+    addGamesToGameList();
+    showListOfSavedGames(games);
+}
 
 function retrieveAllGamesFromStorage(){
     if(localStorage.length > 0){
@@ -57,6 +52,9 @@ function importJSONFileToLocalStorage(JSONfile){
     }
     if(typeof(JSONfile) == 'object'){
         let tempListOfGames = JSON.parse(localStorage.getItem(gameListKey));
+        if(localStorage.length == 0){
+            tempListOfGames = [];
+        }
         for(let i = 0; i < JSONfile.length; i++){
             tempListOfGames.push(JSONfile[i]);
         }
@@ -278,10 +276,219 @@ function addNewGameToListOfGames(event) {
     let targetElement = event.target;
     if(targetElement.className === 'addNewGameToList'){
         let newGameData = new Game(valOfTitle, valOfDesigner, valOfArtist, valOfPublisher, valOfYear, valOfPlayers, valOfTime, valOfDifficulty, valOfUrl, valOfPlayCount, valOfPersonalRating);
-        if(parseInt(valOfPlayCount).toString() != 'NaN'){
+        if(parseInt(valOfPlayCount).toString() != 'NaN' && parseInt(valOfPersonalRating).toString() != 'NaN' && parseInt(valOfPlayers[0]).toString() != 'NaN' && parseInt(valOfYear).toString() != 'NaN'
+    && valOfTitle.toString() != "" && valOfDesigner.toString() != "" && valOfArtist.toString() != "" && valOfPublisher.toString() != ""  && valOfTime.toString() != ""
+    && valOfUrl.toString() != ""){
+        if(valOfDifficulty[0].toString() == 'L' || valOfDifficulty[0].toString() == 'M' || valOfDifficulty[0].toString() == 'H')
             saveNewGameToStorage(newGameData);
             games.push(newGameData);
             showListOfSavedGames(newGameData);
         }
     }
 }
+
+let sortPlayerCountButton = document.getElementById('playerCountSort');
+let sortRatingButton = document.getElementById('ratingSort');
+let sortDifficultyButton = document.getElementById('difficultySort');
+let sortPlayCountButton = document.getElementById('playCountSort');
+sortPlayCountButton.style.marginTop = '5px';
+
+sortPlayerCountButton.addEventListener('click', function(event){
+    let tempListOfPlayersNumber = [];
+    for(let i = 0; i < games.length; i++){
+        tempListOfPlayersNumber.push(parseInt(games[i].players[0]));
+    }
+    tempListOfPlayersNumber = tempListOfPlayersNumber.sort()
+    let newSortedListOfGames = [];
+    for(let i = 0; i < games.length; i++){
+        let currentSelectedGameValue = tempListOfPlayersNumber[i];
+        for(let i = 0; i < games.length; i++){
+            if(parseInt(games[i].players[0]) == currentSelectedGameValue){
+                newSortedListOfGames.push(games[i]);
+            }
+        }
+    }
+    let finalSortedGameList = [];
+    for(let i = 0; i < newSortedListOfGames.length; i++){
+        let currentSelectedGame = newSortedListOfGames[i];
+        if(finalSortedGameList.length == 0){
+            finalSortedGameList.push(currentSelectedGame);
+        }
+        let duplicate = false;
+        for(let i = 0; i < finalSortedGameList.length; i++){
+            if(currentSelectedGame == finalSortedGameList[i]){
+                duplicate = true;
+            }
+        }
+        if(!duplicate){
+            finalSortedGameList.push(currentSelectedGame);
+        }
+        duplicate = false;
+    }
+
+    const ul = document.getElementById('gamesList');
+    ul.innerHTML = "";
+
+    localStorage.setItem(gameListKey, JSON.stringify(finalSortedGameList));
+    games = finalSortedGameList;
+
+    for(let i = 0; i < finalSortedGameList.length; i++){
+        createListedDetails(finalSortedGameList[i], i);
+    }
+    
+})
+sortRatingButton.addEventListener('click', function(event){
+    let tempListOfRating = [];
+    for(let i = 0; i < games.length; i++){
+        tempListOfRating.push(parseInt(games[i].personalRating));
+    }
+    tempListOfRating = tempListOfRating.sort()
+    let newSortedListOfGames = [];
+    for(let i = 0; i < games.length; i++){
+        let currentSelectedGameValue = tempListOfRating[i];
+        for(let i = 0; i < games.length; i++){
+            if(parseInt(games[i].personalRating) == currentSelectedGameValue){
+                newSortedListOfGames.push(games[i]);
+            }
+        }
+    }
+    let finalSortedGameList = [];
+    let rated10Games = [];
+    for(let i = 0; i < newSortedListOfGames.length; i++){
+        let currentSelectedGame = newSortedListOfGames[i];
+        if(finalSortedGameList.length == 0){
+            finalSortedGameList.push(currentSelectedGame);
+        }
+        let duplicate = false;
+        for(let i = 0; i < finalSortedGameList.length; i++){
+            if(currentSelectedGame == finalSortedGameList[i]){
+                duplicate = true;
+            }
+        }
+        if(!duplicate){
+            if(parseInt(currentSelectedGame.personalRating) == 10){
+                rated10Games.push(currentSelectedGame)
+            } else {
+                finalSortedGameList.push(currentSelectedGame);
+            }
+        }
+        duplicate = false;
+    }
+    for(let i = 0; i < rated10Games.length; i++){
+        finalSortedGameList.push(rated10Games[i]);
+    }
+
+    const ul = document.getElementById('gamesList');
+    ul.innerHTML = "";
+
+    localStorage.setItem(gameListKey, JSON.stringify(finalSortedGameList));
+    games = finalSortedGameList;
+
+    for(let i = 0; i < finalSortedGameList.length; i++){
+        createListedDetails(finalSortedGameList[i], i);
+    }
+})
+sortDifficultyButton.addEventListener('click', function(event){
+    let tempListOfDifficulty = [];
+    for(let i = 0; i < games.length; i++){
+        tempListOfDifficulty.push(games[i].difficulty[0]);
+    }
+    tempListOfDifficulty = tempListOfDifficulty.sort()
+    let newTempListOfDifficulty = [];
+    let hList = [];
+    for(let i = 0; i < tempListOfDifficulty.length; i++){
+        if(tempListOfDifficulty[i].toLowerCase() == 'h'){
+            hList.push(tempListOfDifficulty[i])
+        } else {
+            newTempListOfDifficulty.push(tempListOfDifficulty[i]);
+        }
+    }
+    for(let i = 0; i < hList.length; i++){
+        newTempListOfDifficulty.push(hList[i]);
+    }
+    tempListOfDifficulty = newTempListOfDifficulty;
+    let newSortedListOfGames = [];
+    for(let i = 0; i < games.length; i++){
+        let currentSelectedGameValue = tempListOfDifficulty[i];
+        for(let i = 0; i < games.length; i++){
+            if(games[i].difficulty[0] == currentSelectedGameValue){
+                newSortedListOfGames.push(games[i]);
+            }
+        }
+    }
+    let finalSortedGameList = [];
+    for(let i = 0; i < newSortedListOfGames.length; i++){
+        let currentSelectedGame = newSortedListOfGames[i];
+        if(finalSortedGameList.length == 0){
+            finalSortedGameList.push(currentSelectedGame);
+        }
+        let duplicate = false;
+        for(let i = 0; i < finalSortedGameList.length; i++){
+            if(currentSelectedGame == finalSortedGameList[i]){
+                duplicate = true;
+            }
+        }
+        if(!duplicate){
+            finalSortedGameList.push(currentSelectedGame);
+        }
+        duplicate = false;
+    }
+
+    const ul = document.getElementById('gamesList');
+    ul.innerHTML = "";
+
+    localStorage.setItem(gameListKey, JSON.stringify(finalSortedGameList));
+    games = finalSortedGameList;
+
+    for(let i = 0; i < finalSortedGameList.length; i++){
+        createListedDetails(finalSortedGameList[i], i);
+    }
+
+})
+sortPlayCountButton.addEventListener('click', function(event){
+    function compareTwoNumbers(a, b){
+        return a - b;
+    }
+    let tempListOfPlayCount = [];
+    for(let i = 0; i < games.length; i++){
+        tempListOfPlayCount.push(parseInt(games[i].playCount));
+    }
+    tempListOfPlayCount = tempListOfPlayCount.sort(compareTwoNumbers)
+
+    let newSortedListOfGames = [];
+    for(let i = 0; i < games.length; i++){
+        let currentSelectedGameValue = tempListOfPlayCount[i];
+        for(let i = 0; i < games.length; i++){
+            if(parseInt(games[i].playCount) == currentSelectedGameValue){
+                newSortedListOfGames.push(games[i]);
+            }
+        }
+    }
+    let finalSortedGameList  = [];
+    for(let i = 0; i < newSortedListOfGames.length; i++){
+        let currentSelectedGame = newSortedListOfGames[i];
+        if(finalSortedGameList.length == 0){
+            finalSortedGameList.push(currentSelectedGame);
+        }
+        let duplicate = false;
+        for(let i = 0; i < finalSortedGameList.length; i++){
+            if(currentSelectedGame == finalSortedGameList[i]){
+                duplicate = true;
+            }
+        }
+        if(!duplicate){
+            finalSortedGameList.push(currentSelectedGame);
+        }
+        duplicate = false;
+    }
+
+    const ul = document.getElementById('gamesList');
+    ul.innerHTML = "";
+
+    localStorage.setItem(gameListKey, JSON.stringify(finalSortedGameList));
+    games = finalSortedGameList;
+
+    for(let i = 0; i < finalSortedGameList.length; i++){
+        createListedDetails(finalSortedGameList[i], i);
+    }
+})

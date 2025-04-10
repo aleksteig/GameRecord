@@ -12,43 +12,49 @@
     <div id="message"></div>
 
     <div style="flex-direction: column;" class="allGamesList">
-        <ul id="gamesList" class ="allGamesLists" >
 
+        <button id="playerCountSort">Sort by player count</button>
+        <button id="ratingSort">Sort by rating</button>
+        <button id="difficultySort">Sort by difficulty</button>
+        <button id="playCountSort">Sort by play count</button>
+
+        <ul id="gamesList" class ="allGamesLists" >
+            
         </ul>
 
         <div class="addNewGame" style="align-content: end;">
             <label for="title">Title: </label>
-            <input type="text" id="title" name="title">
+            <input type="text" id="title" name="title" placeholder="Title of the game">
             <br>
             <label for="designer">Designer: </label>
-            <input type="text" id="designer" name="designer">
+            <input type="text" id="designer" name="designer" placeholder="Designer of the game">
             <br>
             <label for="artist">Artist: </label>
-            <input type="text" id="artist" name="artist">
+            <input type="text" id="artist" name="artist" placeholder="Artist of the game">
             <br>
             <label for="publisher">Publisher: </label>
-            <input type="text" id="publisher" name="publisher">
+            <input type="text" id="publisher" name="publisher" placeholder="Publisher of the game">
             <br>
             <label for="year">Year: </label>
-            <input type="text" id="year" name="year">
+            <input type="text" id="year" name="year" placeholder="Year game came out">
             <br>
             <label for="players">Players: </label>
-            <input type="text" id="players" name="players">
+            <input type="text" id="players" name="players" placeholder="Players needed">
             <br>
             <label for="time">Time: </label>
-            <input type="text" id="time" name="time">
+            <input type="text" id="time" name="time" placeholder="Time to finish the game">
             <br>
             <label for="difficulty">Difficulty: </label>
-            <input type="text" id="difficulty" name="difficulty">
+            <input type="text" id="difficulty" name="difficulty" placeholder="Difficulty of the game">
             <br>
             <label for="url">BGG Listing: </label>
-            <input type="text" id="url" name="url">
+            <input type="text" id="url" name="url" placeholder="URL to the game">
             <br>
             <label for="playCount">Playcount: </label>
-            <input type="text" id="playCount" name="playCount">
+            <input type="text" id="playCount" name="playCount" placeholder="Times you've played it">
             <br>
             <label for="personalRating">Rating: </label>
-            <input type="text" id="personalRating" name="personalRating">
+            <input type="text" id="personalRating" name="personalRating" placeholder="Your rating of the game">
             <br>
             <button id="addGameToList" class="addNewGameToList">+</button>
         </div>
