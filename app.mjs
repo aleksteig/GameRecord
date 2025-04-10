@@ -97,7 +97,6 @@ function  handleFileSelection(event){
             console.error(error);
         }
         for(let i = 0; i < readFile.length; i++){
-            console.log(readFile[i].title)
             games.push(readFile[i])
             showListOfSavedGames(readFile[i]);
         }
@@ -126,7 +125,7 @@ function addGamesToGameList(){
 
 function createListedDetails(data, dataindex){
     let currentData = data;
-    let currentIndex = dataindex
+    let currentIndex = dataindex;
     let linebreak = document.createElement('br');
     const ul = document.getElementById("gamesList");
     let liElement = document.createElement('li');
@@ -141,7 +140,8 @@ function createListedDetails(data, dataindex){
     let addTimesPlayedButton = document.createElement('button');
     let slider = document.createElement('input');
     let playCountNode = document.createTextNode('Playcount: ' + currentData.playCount + ' ');
-    let ratingNode = document.createTextNode('Rating: ' + slider.value + ' ');
+    let ratingNode = document.createTextNode('Rating: ' + currentData.personalRating + ' ');
+    let deleteGameFromListsButton = document.createElement('button');
 
     itemElementHeader.appendChild(document.createTextNode(currentData.title));
     itemElements.appendChild(linebreak);
@@ -195,6 +195,26 @@ function createListedDetails(data, dataindex){
     })
     gameRating.appendChild(slider);
 
+    deleteGameFromListsButton.classList.add('deleteGameFromLists');
+    deleteGameFromListsButton.textContent = 'Delete Game';
+    deleteGameFromListsButton.style.color = 'red'
+    deleteGameFromListsButton.style.height = '24px';
+    deleteGameFromListsButton.style.width = '100px';
+    deleteGameFromListsButton.style.marginTop = '10px';
+    deleteGameFromListsButton.value = currentIndex;
+    deleteGameFromListsButton.addEventListener('click', function (event) {
+        let targetIndex = parseInt(this.value);
+        games.splice(targetIndex, 1);
+        localStorage.setItem(gameListKey, JSON.stringify(games));
+
+        const ul = document.getElementById('gamesList');
+        ul.innerHTML = "";
+
+        for(let i = 0; i < games.length; i++){
+            createListedDetails(games[i], i);
+        }
+    });
+
     listedDetails1.style.fontSize = '20px';
     listedDetails2.style.fontSize = '20px';
     listedDetails3.style.fontSize = '20px';
@@ -209,6 +229,7 @@ function createListedDetails(data, dataindex){
     liElement.appendChild(listedDetails4);
     liElement.appendChild(timesPlayed);
     liElement.appendChild(gameRating);
+    liElement.appendChild(deleteGameFromListsButton);
     ul.appendChild(liElement);
 }
 
